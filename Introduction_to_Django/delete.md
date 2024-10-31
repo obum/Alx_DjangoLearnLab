@@ -16,7 +16,8 @@ Delete the book you created and confirm the deletion by trying to retrieve all b
 
 #*Output trying to retrieve all book object*
 
-`QuerySet [Book: id: 1
+`QuerySet 
+>, Book: id: 1
 title: Things fall apart
 author: Chinwe Achebe
 publication_year: 1959
