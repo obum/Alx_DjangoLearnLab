@@ -11,6 +11,7 @@ Delete the book you created and confirm the deletion by trying to retrieve all b
 
 ## Expected output:
 #*Output after deletion of a book object*
+> 'from bookshelf.models import Book'
 > `(1, {'bookshelf.Book': 1})
 `
 
