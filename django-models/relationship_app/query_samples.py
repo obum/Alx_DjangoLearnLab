@@ -22,9 +22,7 @@ author_name = 'Chinwe Achebe'
 
 author = Author.objects.get(name=author_name)
 
-all_books = Book.objects.all()
-
-all_book_by_author =  all_books.filter(author=author)
+all_book_by_author = Book.objects.filter(author=author)
 
 for book in all_book_by_author:
     print(book)
