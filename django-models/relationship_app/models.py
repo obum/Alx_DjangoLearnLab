@@ -13,6 +13,9 @@ class Book(models.Model):
     # author is a Foreign key from the author model and can be accessed from the author model as books
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
     
+    def __str__(self):
+        return self.title
+    
 # Library Model:
 # name: CharField.
 # books: ManyToManyField to Book.
