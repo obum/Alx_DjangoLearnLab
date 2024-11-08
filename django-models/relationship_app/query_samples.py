@@ -26,3 +26,13 @@ all_book_by_author = Book.objects.filter(author=author)
 
 for book in all_book_by_author:
     print(book)
+    
+# Retrieve the librarian for a library.
+
+library_name = 'Ogun State Library'
+
+library = Library.objects.get(name=library_name)
+
+the_librarain = Librarian.objects.filter(library=library)
+
+print(the_librarain.name)
