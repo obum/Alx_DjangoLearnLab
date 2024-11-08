@@ -33,6 +33,6 @@ library_name = 'Ogun State Library'
 
 library = Library.objects.get(name=library_name)
 
-the_librarain = Librarian.objects.filter(library=library)
+the_librarain = Librarian.objects.get(library=library)
 
 print(the_librarain.name)
