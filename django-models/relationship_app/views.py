@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .models import Book, Library
+from .models import Library
+from .models import Book
 
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView
 
 library_name = "Alor library"
 
