@@ -11,7 +11,7 @@ library_name = "Alor library"
 
 # Create your views here.
 
-def books_author_view(request):
+def list_books(request):
     
     books = Book.objects.all()
     
@@ -20,7 +20,7 @@ def books_author_view(request):
     return render(request, template_name='relationship_app/list_books.html', context=context)
 
 
-class DisplayingLibraryDetails(DetailView):
+class LibraryDetailView(DetailView):
     model = Library
     context_object_name = 'library'
     template_name = 'relationship_app/library_detail.html'
