@@ -1,6 +1,5 @@
-from re import search
 from django.contrib import admin
-from .models import Book, Author, Librarian, Library
+from .models import Book, Author, Librarian, Library, UserProfile
 
 # Register your models here.
 
@@ -15,4 +14,7 @@ class LibraryAdmin(admin.ModelAdmin):
     search_fields = ('name', 'books')
 admin.site.register(Library, LibraryAdmin)
 
-
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role')
+    # search_fields = ('name', 'books')
+admin.site.register(UserProfile, UserAdmin)
