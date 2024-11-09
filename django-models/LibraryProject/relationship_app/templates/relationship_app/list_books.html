@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <title>List of Books</title>
 </head>
+{% if request.user.is_authenticated %}
+    <p> {{request.user}} is logged in</p>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <button type="submit" > logout</button>
+    </form>
+{% else %}
+    <p> {{request.user}} is logged out </p>
+    <a href= "{% url 'login' %}">Login</a>
+
+{% endif %}
+<hr>
+
 <body>
     <h1>Books Available:</h1>
     <ul>
