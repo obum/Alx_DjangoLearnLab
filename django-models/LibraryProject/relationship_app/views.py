@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from .models import Library
 from .models import Book
 
@@ -13,18 +14,30 @@ from django.contrib.auth import login
 
 from django.contrib.auth.views import LoginView
 
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been created successfully!')
+            return redirect('login')  # Redirect to login page after successful registration
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
 
 
-class RegisterView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'relationship_app/register.html'
+
+
+# class RegisterView(CreateView):
+#     form_class = UserCreationForm
+#     success_url = reverse_lazy('login')
+#     template_name = 'relationship_app/register.html'
     
-    def form_valid(self, form):
-        user = form.save()
-        if user is not None:
-            login(self.request, user)
-        return super(RegisterView, self).form_valid(form)    
+#     def form_valid(self, form):
+#         user = form.save()
+#         if user is not None:
+#             login(self.request, user)
+#         return super(RegisterView, self).form_valid(form)    
     
 
 class CustomLoginView(LoginView):

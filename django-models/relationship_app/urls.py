@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import list_books, LibraryDetailView, register
+from .views import list_books, LibraryDetailView
 
-from .views import register
+# from .views import register
 
 from . import views
 
