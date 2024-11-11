@@ -7,11 +7,8 @@ from django.contrib.auth.views import LoginView
 
 from django.contrib.auth.views import LogoutView
 
-from .admin_view import admin_view
-from .member_view import member_view
-from .librarian_view import librarian_view
 
-from . import views
+from .views import admin_view, librarian_view, member_view
 
 
 
