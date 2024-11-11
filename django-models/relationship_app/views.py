@@ -16,6 +16,12 @@ from django.contrib.auth import login
 
 from django.contrib.auth.views import LoginView
 
+from .admin_view import is_admin
+from .librarian_view import is_librarian
+from .member_view import is_member
+from django.contrib.auth.decorators import user_passes_test
+
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -82,3 +88,18 @@ class LibraryDetailView(DetailView):
     model = Library
     context_object_name = 'library'
     template_name = 'relationship_app/library_detail.html'
+
+
+@user_passes_test(is_admin)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+
+@user_passes_test(is_member)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
