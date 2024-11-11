@@ -13,8 +13,8 @@ class UserProfile(models.Model):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     
-    # def __str__(self):
-    #     return f"{self.user.username} - {self.role}"
+    def __str__(self):
+        return f"{self.user.username} - {self.role}"
     
 @receiver(post_save, sender=User)
 def created_profile(sender, instance, created, **kwargs):
@@ -29,10 +29,16 @@ def save_user_profile(sender, instance, **kwargs):
 class Author(models.Model):
     name = models.CharField(max_length=50)
     
+    def __str__(self):
+        return f"{self.name}"    
+    
 class Book(models.Model):
     title = models.CharField(max_length=50)
     # author is a Foreign key from the author model and can be accessed from the author model as books
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
+    
+    def __str__(self):
+        return f"{self.title}"     
     
 # Library Model:
 # name: CharField.
@@ -42,6 +48,7 @@ class Library(models.Model):
     name = models.CharField(max_length=50)
     # books has a ManytoMany rel. to the Library model and can be accessed from the book model as libraries_found
     books = models.ManyToManyField(Book, related_name='Libraries_found')
+    
 
     def display_books(self):
         """Create a string for the Genre. This is required to display genre in Admin."""
@@ -54,6 +61,9 @@ class Library(models.Model):
         return len(self.books.all())
 
     display_book_count.short_description = 'Count of Books'
+    
+    def __str__(self):
+        return f"{self.name}"    
 
 # Librarian Model:
 # name: CharField.
