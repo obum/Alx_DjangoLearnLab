@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponseForbidden
-from .models import UserProfile
+from django.contrib.auth.decorators import user_passes_test
 
+
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
+
+@user_passes_test(is_admin)
 def admin_view(request):
-    # Check if the user is authenticated and has the 'Admin' role
-    if request.user.is_authenticated and request.user.userprofile.role == 'Admin':
-        return HttpResponseForbidden("You do not have permission to access this page.")
     return render(request, 'relationship_app/admin_page.html')
