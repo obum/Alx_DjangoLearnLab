@@ -30,7 +30,7 @@ urlpatterns = [
     path('member_view/', member_view, name='member_view'),
     
     path('add_book/', views.add_book, name='add-book'),
-    path('edit_book/<int:pk>/', views.edit_book, name='edit-book'),
+    path('change_book/<int:pk>/', views.change_bookk, name='change-book'),
     path('delete_book/<int:pk>/', views.delete_book, name='delete-book'),
 
 ]   
