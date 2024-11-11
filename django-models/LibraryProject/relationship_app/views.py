@@ -5,6 +5,8 @@ from .models import Book
 
 from django.views.generic.detail import DetailView
 
+from django.contrib.auth.decorators import permission_required
+
 # ----This import are used for user registration ---- #
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -13,6 +15,9 @@ from django.views.generic import CreateView
 from django.contrib.auth import login
 
 from django.contrib.auth.views import LoginView
+
+from django.contrib.auth.decorators import user_passes_test
+
 
 def register(request):
     if request.method == 'POST':
@@ -52,6 +57,21 @@ class CustomLoginView(LoginView):
 
 # Create your views here.
 
+@permission_required('relationship_app.can_add_book')
+def add_book(request):
+    # Add a book logic
+    return render(request,template_name='relationship_app/add_book.html')
+
+@permission_required('relationship_app.can_change_book')
+def edit_book(request):
+    # Edit a book logic
+    return render(request,template_name='relationship_app/edit_book.html')
+
+@permission_required('relationship_app.can_delete_book')
+def delete_book(request):
+    # Delete a book logic
+    return render(request,template_name='relationship_app/delete_book.html')
+
 def list_books(request):
     
     books = Book.objects.all()
@@ -65,3 +85,26 @@ class LibraryDetailView(DetailView):
     model = Library
     context_object_name = 'library'
     template_name = 'relationship_app/library_detail.html'
+
+
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
+
+@user_passes_test(is_admin)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+@user_passes_test(is_member)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
