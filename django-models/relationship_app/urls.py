@@ -16,8 +16,8 @@ from .librarian_view import librarian_view
 urlpatterns = [
     # path('register/', view=RegisterView.as_view() , name='register'),
     path('register/', views.register , name='register'),
-    path('login/', view=CustomLoginView.as_view() , name='login'),
-    path('logout/', view=LogoutView.as_view() , name='logout'),
+    path('login/', LoginView.as_view(template_name= 'relationship_app/login.html') , name='login'),
+    path('logout/', LogoutView.as_view(template_name= 'relationship_app/logout.html') , name='logout'),
 
 
     path('', view=list_books , name='books-view'),
