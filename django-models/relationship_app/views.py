@@ -5,6 +5,8 @@ from .models import Book
 
 from django.views.generic.detail import DetailView
 
+from django.contrib.auth.decorators import permission_required
+
 # ----This import are used for user registration ---- #
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -51,6 +53,21 @@ class CustomLoginView(LoginView):
 
 
 # Create your views here.
+
+@permission_required('relationship_app.can_add_book')
+def add_book(request):
+    # Add a book logic
+    return render(request,template_name='relationship_app/add_book.html')
+
+@permission_required('relationship_app.can_edit_book')
+def edit_book(request):
+    # Edit a book logic
+    return render(request,template_name='relationship_app/edit_book.html')
+
+@permission_required('relationship_app.can_delete_book')
+def delete_book(request):
+    # Delete a book logic
+    return render(request,template_name='relationship_app/delete_book.html')
 
 def list_books(request):
     

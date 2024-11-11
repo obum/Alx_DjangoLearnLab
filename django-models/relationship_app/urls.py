@@ -11,6 +11,8 @@ from .admin_view import admin_view
 from .member_view import member_view
 from .librarian_view import librarian_view
 
+from . import views
+
 
 
 urlpatterns = [
@@ -26,5 +28,9 @@ urlpatterns = [
     path('admin-page/', admin_view, name='admin_view'),
     path('librarian_view/', librarian_view, name='librarian_view'),
     path('member_view/', member_view, name='member_view'),
+    
+    path('add_book/', views.add_book, name='add-book'),
+    path('edit_book/<int:pk>/', views.edit_book, name='edit-book'),
+    path('delete_book/<int:pk>/', views.delete_book, name='delete-book'),
 
 ]   
