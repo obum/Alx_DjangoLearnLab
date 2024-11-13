@@ -23,9 +23,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-gxjemh&7-(3m=lwrw=^#fu7@qjp$xd76()logi^-gxuxx5o+-t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+
+# DEBUG = True
+
+
+# --------------MORE SECURITY SETTING ------------  #
+
+# Set to False for production
+
+DEBUG = False
+
+# Security Settings
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True
+
+
 
 ALLOWED_HOSTS = []
+
+# Content Security Policy settings
+CSP_DEFAULT_SRC = ("'self'",)  # Allow content only from the same origin by default
+# CSP_SCRIPT_SRC = ("'self'", "https://trustedscripts.example.com")  # Allow scripts from these sources
+# CSP_STYLE_SRC = ("'self'", "https://trustedstyles.example.com")    # Allow styles from these sources
+# CSP_IMG_SRC = ("'self'", "https://trustedimages.example.com")      # Allow images from these sources
+# CSP_FONT_SRC = ("'self'", "https://trustedfonts.example.com")      # Allow fonts from these sources
+# CSP_CONNECT_SRC = ("'self'", "https://api.example.com")            # Allow AJAX calls to these sources
+
 
 
 # Application definition
@@ -39,6 +69,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf.apps.BookshelfConfig',
     'relationship_app.apps.RelationshipAppConfig',
+    # Security setup
+    'csp',
 ]
 
 MIDDLEWARE = [
