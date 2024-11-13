@@ -25,5 +25,8 @@
         <li>{{ book.title }} by {{ book.author }}</li>
         {% endfor %}
     </ul>
+    <a href = "{% url 'book-new' %}" >Add Book
+        {% include './icons/file-earmark-plus.svg' %}
+    </a>
 </body>
 </html>

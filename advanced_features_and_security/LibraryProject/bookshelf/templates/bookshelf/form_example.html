@@ -1,0 +1,6 @@
+<h2>New Book</h2>
+<form method="POST" action= "{% url 'book-list'%}" >
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit"  value=''>Add book</button>
+</form>
