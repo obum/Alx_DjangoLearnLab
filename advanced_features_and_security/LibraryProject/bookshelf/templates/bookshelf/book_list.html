@@ -1,0 +1,29 @@
+<!-- list_books.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Books</title>
+</head>
+{% if request.user.is_authenticated %}
+    <p> {{request.user}} is logged in</p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" > logout</button>
+    </form>
+{% else %}
+    <p> {{request.user}} is logged</p>
+    <a href= "{% url 'login' %}">Login</a>
+
+{% endif %}
+<hr>
+
+<body>
+    <h1>Books Available:</h1>
+    <ul>
+        {% for book in books %}
+        <li>{{ book.title }} by {{ book.author }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

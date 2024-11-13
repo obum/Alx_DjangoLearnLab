@@ -8,6 +8,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
 
+from django.contrib.auth.models import Permission
+
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True)
     profile_photo = models.ImageField(verbose_name=("profile picture"), upload_to='profile_image/', null=True)
@@ -86,10 +88,10 @@ class Book(models.Model):
             ('can_change_book', 'can change book'),
             ('can_delete_book', 'can delete book')
         ]
-    
-# Library Model:
-# name: CharField.
-# books: ManyToManyField to Book.
+        
+  
+
+
 
 class Library(models.Model):
     name = models.CharField(max_length=50)
@@ -111,6 +113,10 @@ class Library(models.Model):
     
     def __str__(self):
         return self.name    
+    
+
+    
+    
 
 # Librarian Model:
 # name: CharField.

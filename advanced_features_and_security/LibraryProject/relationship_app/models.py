@@ -8,44 +8,44 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
 
-class CustomUser(AbstractUser):
-    date_of_birth = models.DateField(null=True)
-    profile_photo = models.ImageField(verbose_name=("profile picture"), upload_to='profile_image/', null=True)
+# class CustomUser(AbstractUser):
+#     date_of_birth = models.DateField(null=True)
+#     profile_photo = models.ImageField(verbose_name=("profile picture"), upload_to='profile_image/', null=True)
     
-class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **kwargs):
+# class CustomUserManager(BaseUserManager):
+#     def create_user(self, email, password=None, **kwargs):
         
-        if not email:
-            raise ValueError('The Email field must be set')
+#         if not email:
+#             raise ValueError('The Email field must be set')
         
-        # Normalize the email by lowering the domain part.
-        email = self.normalize_email(email)
-        user = self.model(email=email, **kwargs)
+#         # Normalize the email by lowering the domain part.
+#         email = self.normalize_email(email)
+#         user = self.model(email=email, **kwargs)
         
-        # Set password using Django's built-in method to hash the password
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+#         # Set password using Django's built-in method to hash the password
+#         user.set_password(password)
+#         user.save(using=self._db)
+#         return user
     
-    def create_superuser(self, email, password=None, **extra_fields):
-        """
-        Create and return a superuser with the specified email and password.
-        """ 
-        # Define default values for is_staff and is_superuser as True
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+#     def create_superuser(self, email, password=None, **extra_fields):
+#         """
+#         Create and return a superuser with the specified email and password.
+#         """ 
+#         # Define default values for is_staff and is_superuser as True
+#         extra_fields.setdefault('is_staff', True)
+#         extra_fields.setdefault('is_superuser', True)
 
-        # Raise errors if the necessary fields are not set
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+#         # Raise errors if the necessary fields are not set
+#         if extra_fields.get('is_staff') is not True:
+#             raise ValueError('Superuser must have is_staff=True.')
+#         if extra_fields.get('is_superuser') is not True:
+#             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(email, password, **extra_fields)
+#         return self.create_user(email, password, **extra_fields)
         
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='relationship_profile')
     ROLE_CHOICES = [
         ('Admin', 'Admin'),
         ('Librarian', 'Librarian'),

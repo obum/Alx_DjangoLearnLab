@@ -124,7 +124,7 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-LOGIN_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
 
 STATIC_URL = 'static/'
 
