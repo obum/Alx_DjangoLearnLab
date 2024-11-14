@@ -47,6 +47,12 @@ DEBUG = True
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_SECONDS = 31536000
 
+
+# This configuration is important when running applications behind proxies,
+# ensuring that the application correctly interprets secure requests.
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
 # ALLOWED_HOSTS = []
 
 # Content Security Policy settings
