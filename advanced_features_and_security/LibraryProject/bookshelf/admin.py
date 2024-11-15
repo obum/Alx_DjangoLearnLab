@@ -11,4 +11,11 @@ class BookAdmin(admin.ModelAdmin):
 
 admin.site.register(Book, BookAdmin)
 
-admin.site.register(CustomUser, UserAdmin)
+# admin.site.register(CustomUser, UserAdmin)
+
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email' ,'date_of_birth', 'profile_photo')
+    
+    
+admin.site.register(CustomUser, CustomUserAdmin)
+    
