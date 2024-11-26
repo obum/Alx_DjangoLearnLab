@@ -18,8 +18,9 @@ class BookSerializer(serializers.ModelSerializer):
         
 class AuthorSerializer(serializers.ModelSerializer):
     
-    book = BookSerializer(many=False) # Ensure that an author's book can be accessed from the author serializer
-                                       # "Many = False" because of the one-to-one relationship between the author and book class 
+    book = BookSerializer(many=True, read_only= True) 
+    # Ensure that an author's book can be accessed from the author serializer
+    # "Many = False" because of the one-to-one relationship between the author and book class 
     
     class Meta:
         model = Author
