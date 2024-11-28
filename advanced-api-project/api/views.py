@@ -6,6 +6,11 @@ from .models import Book
 from .serializers import BookSerializer
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+
+from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework import filters
+
 # Create your views here.
 
 # A ListView for retrieving all books.
@@ -18,6 +23,16 @@ class BookList(ListAPIView):
     
     # Use serializer_class to tell the view how to format and validate the queryset data
     serializer_class = BookSerializer
+    
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    filterset_fields = ['title', 'publication_year', 'author']
+    
+    # filter_backends = [filters.SearchFilter]
+    
+    search_fields = ['title', 'author']
+    
+    ordering_fields = ['title', 'publication_year']
     
 # A DetailView for retrieving a single book by ID.
 class BookDetail(RetrieveAPIView):
