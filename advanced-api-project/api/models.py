@@ -8,6 +8,9 @@ class Author(models.Model):
     def __str__(self):
         return self.name
     
+    class Meta:
+        ordering = ['id']
+    
 class Book(models.Model):
     title = models.CharField(max_length=30)
     publication_year = models.IntegerField()
@@ -15,3 +18,6 @@ class Book(models.Model):
     
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['id']

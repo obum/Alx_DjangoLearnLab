@@ -5,7 +5,7 @@ from api.models import Book, Author
 
 
 class BookAdmin(admin.ModelAdmin):
-    list_display = ['title', 'publication_year', 'author']
+    list_display = ['id', 'title', 'publication_year', 'author']
     
 admin.site.register(Book, BookAdmin)
 

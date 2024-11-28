@@ -16,10 +16,12 @@ class BookSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Publication year cannot be in the future.")
         return value
         
+
 class AuthorSerializer(serializers.ModelSerializer):
     
-    book = BookSerializer(many=True, read_only=True) # Ensure that an author's book can be accessed from the author serializer
-                                       # "Many = False" because of the one-to-one relationship between the author and book class 
+    book = BookSerializer(many=True, read_only=True)
+    # Ensure that an author's book can be accessed from the author serializer
+    # "Many = False" because of the one-to-one relationship between the author and book class 
     
     class Meta:
         model = Author
