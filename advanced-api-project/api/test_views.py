@@ -20,7 +20,7 @@ class CreateBookTest(APITestCase):
         # Assert
         self.assertEqual(response.status_code,  status.HTTP_403_FORBIDDEN)
         
-        
+    # response.data
     def test_create_user(self):
         
         User.objects.create_superuser(username='testuser', password='12345')
@@ -29,6 +29,8 @@ class CreateBookTest(APITestCase):
         response = self.client.login(username='testuser', password='12345')
         
         self.assertEqual(response,  True)
+        
+        
       
         
         
