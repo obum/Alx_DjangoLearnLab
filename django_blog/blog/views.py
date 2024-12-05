@@ -36,3 +36,7 @@ class PostView(ListView):
     model = Post
     context_object_name = 'posts'
     template_name = 'blog/base.html'
+    
+
+class ProfileView(ListView):
+    ...
