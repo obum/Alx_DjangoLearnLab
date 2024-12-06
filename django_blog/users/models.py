@@ -23,7 +23,6 @@ class UserManager(BaseUserManager):
         # We call the create user funtion and change the attributes
         
         user = self.create_user(email, password)
-        
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self.db)

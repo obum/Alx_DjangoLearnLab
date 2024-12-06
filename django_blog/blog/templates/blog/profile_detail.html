@@ -1,0 +1,17 @@
+
+{% extends 'blog/base.html' %}
+
+{% block title %} Profile {% endblock %}
+
+{% block content %}
+<br><br>
+<hr>
+<br><br>
+
+<h1>{{ profile.user.username }}</h1>
+<p>Email : {{ profile.user.email }}</p>
+<span>Bio : </span>
+<span>{{ profile.bio }}</span>
+<a href="{% url 'profile-edit' %}">Edit</a>
+
+{% endblock %}

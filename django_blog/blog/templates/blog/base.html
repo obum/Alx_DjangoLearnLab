@@ -21,6 +21,17 @@
     </header>
 
     <div class="content">
+        {% if request.user.is_authenticated %}
+            <span> Hi,  {{ request.user.username }} </span>
+            <a href="{% url 'profile' %}">Profile</a>
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">logout</button>
+            </form>
+        {% else %}
+        <span> Welocme {{ request.user.username }} to the Django Blog</span>
+        {% endif %}
+
         {% block content %}
         <!-- Page-specific content goes here -->
         {% endblock %}

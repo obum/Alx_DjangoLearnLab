@@ -15,8 +15,8 @@ class Post(models.Model):
     
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=1000)
-    profile_pic = models.ImageField(null=True, blank=True, default='', upload_to='profile_pics/')
+    bio = models.TextField(max_length=1000, null=True, blank=True, default='my bio')
+    profile_pic = models.ImageField(null=True, blank=True, default='profile picture', upload_to='profile_pics/')
     
     def __str__(self):
         return f'{self.user.username} Profile'
