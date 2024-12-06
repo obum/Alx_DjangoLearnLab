@@ -1,8 +1,8 @@
 from .forms import CustomUserCreationForm
 from django.shortcuts import render, redirect
 # from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import FormView, ListView, DetailView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView, ListView, DetailView, UpdateView, CreateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
@@ -35,10 +35,22 @@ class HomeView(ListView):
     template_name = 'blog/base.html'
     
     
-class PostView(ListView):
+class ListPostsView(ListView):
     model = Post
     context_object_name = 'posts'
-    template_name = 'blog/base.html'
+    template_name = 'blog/post_list.html'
+    
+class CreatePostView(LoginRequiredMixin, CreateView):
+    model = Post
+    context_object_name = 'post'
+    fields = ['title', 'content']
+    template_name = 'blog/post_create.html'
+    # form_class = form  
+    success_url = reverse_lazy('posts')
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(CreatePostView, self).form_valid(form)
     
 
 class ProfileView(LoginRequiredMixin, DetailView): 
@@ -57,6 +69,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 # class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 #     ...
 
+@login_required
 def ProfileUpdateView(request):
     
     user = request.user # Get the logged-in user
@@ -82,4 +95,35 @@ def ProfileUpdateView(request):
     }
     
     return render(request, 'blog/profile_update.html', context)
+
+class DetailPostView(DetailView):
+    model = Post
+    context_object_name = 'post'
+    template_name = 'blog/post_detail.html'
     
+class EditPostView(LoginRequiredMixin, UpdateView):
+    model = Post
+    context_object_name = 'post'
+    template_name = 'blog/post_update.html'
+    fields = [ 'title', 'content']
+    
+    # success_url = reverse_lazy('post-detail', args=['post.id'])
+        
+    def get_success_url(self):
+            # Use reverse_lazy to dynamically pass the pk of the created object
+            return reverse_lazy('post-detail', kwargs={'pk': self.object.pk})
+
+
+class DeletePostView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    context_object_name = 'post'   
+    fields = '__all__'
+    success_url = reverse_lazy('posts')
+    
+    def test_func(self):
+        post =  self.get_object()
+        return post.author == self.request.user
+
+    def handle_no_permission(self):
+    # Redirect to a custom "access denied" page
+        return redirect('home')

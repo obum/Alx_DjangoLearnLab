@@ -28,9 +28,12 @@
                 {% csrf_token %}
                 <button type="submit">logout</button>
             </form>
+            <a href= "{% url 'post-create'%}"> Add Post</a>
         {% else %}
         <span> Welocme {{ request.user.username }} to the Django Blog</span>
         {% endif %}
+
+        
 
         {% block content %}
         <!-- Page-specific content goes here -->

@@ -1,0 +1,24 @@
+{% extends 'blog/base.html' %}
+
+<br><br>
+<hr>
+<br><br>
+
+{% block content%}
+
+<a href= "{% url 'posts'%}">Go Back</a>
+
+<h2>
+   {{post.title}}
+</h2>
+<span>
+    author: {{post.author}}
+</span>
+<span>
+    date created : {{post.published_date}}
+</span>
+<p>
+    {{post.content}}
+</p>
+
+{% endblock %}
