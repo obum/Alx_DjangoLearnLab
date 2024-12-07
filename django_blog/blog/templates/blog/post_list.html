@@ -6,6 +6,7 @@
         <th></th>
         <th></th>
         <th></th>
+        <th>Author</th>
     </tr>
     
         {% for post in posts%}
@@ -15,7 +16,8 @@
             {% if request.user.is_authenticated %}
             <td><a href="{% url 'post-edit' post.id %}">Edit</a></td>
             <td><a href="{% url 'post-delete' post.id %}">Delete</a></td> 
-            <td> {{ post.author }} </td> 
+            <td> {{ post.author.username}} </td> 
+            
             {% endif %}
         </tr>
         {% empty %}

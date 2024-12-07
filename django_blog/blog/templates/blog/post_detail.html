@@ -7,18 +7,82 @@
 {% block content%}
 
 <a href= "{% url 'posts'%}">Go Back</a>
-
+<br><br>
 <h2>
    {{post.title}}
 </h2>
+<br><br>
 <span>
-    author: {{post.author}}
+    author: {{post.author.username}}
 </span>
 <span>
-    date created : {{post.published_date}}
+    date: {{post.published_date}}
 </span>
+<br><br>
+<hr>
+<br><br>
 <p>
     {{post.content}}
 </p>
+
+<br><br>
+
+<h2>Comments:</h2>
+<br>
+<ul>
+    {% if request.user.is_authenticated %}
+        {% for comment in comments %}
+        <li>
+            <strong>{{ comment.author.username }}</strong> commented:
+            <p>{{ comment.content }}</p>
+            <a href="{% url 'comment-edit' post_id=post.id pk=comment.id %}">Edit</a>
+            <a href="{% url 'comment-delete' post_id=post.id pk=comment.id %}">Delete</a>
+        </li>
+        <br>
+        {% empty %}
+        <p>No comments yet.</p>
+    
+        {% endfor %}
+    {% else %}
+    <p>Login to view comments</p>
+    {% endif %}
+    <br><br>
+    <a href="{% url 'comment-create' post_id=post.id %}">Add comment</a>
+</ul>
+
+    {% comment %} {% block comments %}
+
+        <table>
+            <tr>
+                <th>Comments Section</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>Author</th>
+                <br><br>
+            </tr>
+
+            {% for comment in comments%}
+            <tr>
+
+                {% if request.user.is_authenticated %}
+                    <td>{{comment.content}}</td>
+                    <td><a href="{% url 'comment-edit' post_id=post.id pk=comment.id %}">Edit</a></td>
+                    <td><a href="{% url 'comment-delete' post_id=post.id pk=comment.id %}">Delete</a></td> 
+                {% else %}
+                <p>Login to view comments</p>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <h3>No items in list</h3>
+            {% endfor %}
+            <tr>
+                <td><a href="{% url 'comment-create' post_id=post.id %}">Add comment</a></td>
+            </tr>
+        
+
+
+        </table>
+    {% endblock %} {% endcomment %}
 
 {% endblock %}

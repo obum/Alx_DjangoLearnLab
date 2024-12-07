@@ -1,16 +1,14 @@
-
-
-{% extends 'blog/base.html' %}
+{% extends 'blog/base.html'%}
 
 {% block content%}
 <h3>
-    Edit Post
+    Create a Comment
 </h3>
 <a href= "{% url 'posts' %}">Go Back</a>
 
 <form method='POST', action=''>
     {% csrf_token %}
-    {{form}}
+    {{form.as_p}}
     <input type= 'submit', value='Submit'>
 </form>
 

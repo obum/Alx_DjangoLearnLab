@@ -1,4 +1,4 @@
-from .forms import CustomUserCreationForm
+from .forms import CommentForm, CustomUserCreationForm
 from django.shortcuts import render, redirect
 # from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import FormView, ListView, DetailView, UpdateView, CreateView, DeleteView
@@ -6,9 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import Post, Profile
+from .models import Comment, Post, Profile
 from .forms import UserForm, ProfileForm
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
@@ -101,6 +102,12 @@ class DetailPostView(DetailView):
     context_object_name = 'post'
     template_name = 'blog/post_detail.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()  # Get the post object
+        context['comments'] = post.comments.all()  # Fetch all related comments
+        return context
+    
 class EditPostView(LoginRequiredMixin, UpdateView):
     model = Post
     context_object_name = 'post'
@@ -112,7 +119,6 @@ class EditPostView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
             # Use reverse_lazy to dynamically pass the pk of the created object
             return reverse_lazy('post-detail', kwargs={'pk': self.object.pk})
-
 
 class DeletePostView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -127,3 +133,66 @@ class DeletePostView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def handle_no_permission(self):
     # Redirect to a custom "access denied" page
         return redirect('home')
+    
+class CreateCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_create.html'
+    context_object_name = 'comment'
+    
+    
+    # def get_form_kwargs(self):
+    #     # Pass the request to the form so we can use request.user in the form's save method
+    #     kwargs = super().get_form_kwargs()
+    #     # Get the Post object using the 'post_id' from the URL
+    #     post = get_object_or_404(Post, id=self.kwargs['post_id'])     
+    #     # Pass the Post object to the form via 'initial' data
+    #     kwargs['initial'] = {'post': post}  # or {'post': post.id} to just pass the ID
+    #     kwargs['request'] = self.request
+    #     return kwargs
+    def form_valid(self, form):
+        post = get_object_or_404(Post, id=self.kwargs['post_id'])
+        comment = form.save(commit=False)
+        comment.post = post  # Assign the post to the comment
+        comment.author = self.request.user
+        comment.save()
+        # return super(CreateCommentView, self).form_valid(form)
+        return redirect('post-detail', pk=post.id)
+
+    
+class EditCommentView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_update.html'
+    context_object_name = 'comment'
+    
+    def form_valid(self, form):
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.id})
+
+class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    context_object_name = 'comment'   
+    fields = '__all__'
+    # success_url = reverse_lazy('posts')
+    # DeleteView requires a default template 
+    # template_name = modelname_confirm_delete.html 
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.id})
+
+    
+    
+    def test_func(self):
+        comment =  self.get_object()
+        return comment.author == self.request.user
+
+    def handle_no_permission(self):
+    # Redirect to a custom "access denied" page
+        return redirect('comments')
+ 
+class ListCommentsView(ListView):
+    model = Comment
+    context_object_name = 'comments'
+    template_name = 'blog/post_detail.html'   

@@ -1,0 +1,21 @@
+{% extends 'blog/base.html' %}
+
+{% block content%}
+<br><br>
+<h3>
+    Delete Comment
+</h3>
+<br><br>
+
+<br><br>
+<p> Do you really want to delete this comment? </p>
+<br>
+{{ comment }}
+<br><br>
+<form method='POST', action=''>
+    {% csrf_token %}
+    {{form}}
+    <input type= 'submit', value='Delete'>
+</form>
+<a href= "{% url 'posts' %}">Go Back </a>
+{% endblock %}
