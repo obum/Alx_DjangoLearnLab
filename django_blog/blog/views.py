@@ -134,7 +134,7 @@ class DeletePostView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     # Redirect to a custom "access denied" page
         return redirect('home')
     
-class CreateCommentView(CreateView):
+class CommentCreateView(CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_create.html'
@@ -160,7 +160,7 @@ class CreateCommentView(CreateView):
         return redirect('post-detail', pk=post.id)
 
     
-class EditCommentView(UpdateView):
+class CommentUpdateView(UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_update.html'
@@ -172,7 +172,7 @@ class EditCommentView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('post-detail', kwargs={'pk': self.object.id})
 
-class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     context_object_name = 'comment'   
     fields = '__all__'
