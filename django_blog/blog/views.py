@@ -151,7 +151,7 @@ class CommentCreateView(CreateView):
     #     kwargs['request'] = self.request
     #     return kwargs
     def form_valid(self, form):
-        post = get_object_or_404(Post, id=self.kwargs['pk'])
+        post = get_object_or_404(Post, id=self.kwargs['post_id'])
         comment = form.save(commit=False)
         comment.post = post  # Assign the post to the comment
         comment.author = self.request.user
@@ -168,7 +168,7 @@ class CommentUpdateView(UserPassesTestMixin, UpdateView):
     
     def get_object(self):
         # Use `comment_id` from the URL to get the object
-        return get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        return get_object_or_404(Comment, id=self.kwargs['pk'])
 
     def test_func(self):
         comment =  self.get_object()
@@ -176,7 +176,7 @@ class CommentUpdateView(UserPassesTestMixin, UpdateView):
 
     def handle_no_permission(self):
     # Redirect to a custom "access denied" page
-        comment = get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        comment = get_object_or_404(Comment, id=self.kwargs['pk'])
         return redirect('post-detail', pk=comment.post.id)
 
     def form_valid(self, form):
@@ -196,7 +196,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
     def get_object(self):
         # Use `comment_id` from the URL to get the object
-        return get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        return get_object_or_404(Comment, id=self.kwargs['pk'])
 
     
     
@@ -210,7 +210,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def handle_no_permission(self):
     # Redirect to a custom "access denied" page
-        comment = get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        comment = get_object_or_404(Comment, id=self.kwargs['pk'])
         return redirect('post-detail', pk=comment.post.id)
     
 class ListCommentsView(ListView):
