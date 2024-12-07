@@ -35,54 +35,24 @@
         <li>
             <strong>{{ comment.author.username }}</strong> commented:
             <p>{{ comment.content }}</p>
-            <a href="{% url 'comment-edit' post_id=post.id pk=comment.id %}">Edit</a>
-            <a href="{% url 'comment-delete' post_id=post.id pk=comment.id %}">Delete</a>
+            {% if request.user == comment.author %}
+            <a href="{% url 'comment-edit' post.id comment.id %}">Edit</a>
+            <a href="{% url 'comment-delete' post.id comment.id %}">Delete</a>
+            {% endif %}
         </li>
         <br>
         {% empty %}
         <p>No comments yet.</p>
-    
+    <br><br>
+      
         {% endfor %}
+    <a href="{% url 'comment-create' post.id %}">Add comment</a>  
     {% else %}
+    
     <p>Login to view comments</p>
     {% endif %}
-    <br><br>
-    <a href="{% url 'comment-create' post_id=post.id %}">Add comment</a>
+
 </ul>
 
-    {% comment %} {% block comments %}
-
-        <table>
-            <tr>
-                <th>Comments Section</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th>Author</th>
-                <br><br>
-            </tr>
-
-            {% for comment in comments%}
-            <tr>
-
-                {% if request.user.is_authenticated %}
-                    <td>{{comment.content}}</td>
-                    <td><a href="{% url 'comment-edit' post_id=post.id pk=comment.id %}">Edit</a></td>
-                    <td><a href="{% url 'comment-delete' post_id=post.id pk=comment.id %}">Delete</a></td> 
-                {% else %}
-                <p>Login to view comments</p>
-                {% endif %}
-            </tr>
-            {% empty %}
-            <h3>No items in list</h3>
-            {% endfor %}
-            <tr>
-                <td><a href="{% url 'comment-create' post_id=post.id %}">Add comment</a></td>
-            </tr>
-        
-
-
-        </table>
-    {% endblock %} {% endcomment %}
 
 {% endblock %}

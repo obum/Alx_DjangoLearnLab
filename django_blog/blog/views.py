@@ -151,7 +151,7 @@ class CommentCreateView(CreateView):
     #     kwargs['request'] = self.request
     #     return kwargs
     def form_valid(self, form):
-        post = get_object_or_404(Post, id=self.kwargs['post_id'])
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
         comment = form.save(commit=False)
         comment.post = post  # Assign the post to the comment
         comment.author = self.request.user
@@ -160,17 +160,31 @@ class CommentCreateView(CreateView):
         return redirect('post-detail', pk=post.id)
 
     
-class CommentUpdateView(UpdateView):
+class CommentUpdateView(UserPassesTestMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_update.html'
     context_object_name = 'comment'
     
+    def get_object(self):
+        # Use `comment_id` from the URL to get the object
+        return get_object_or_404(Comment, id=self.kwargs['comment_id'])
+
+    def test_func(self):
+        comment =  self.get_object()
+        return comment.author == self.request.user
+
+    def handle_no_permission(self):
+    # Redirect to a custom "access denied" page
+        comment = get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        return redirect('post-detail', pk=comment.post.id)
+
     def form_valid(self, form):
+        
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse_lazy('post-detail', kwargs={'pk': self.object.id})
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.post.id})
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
@@ -179,10 +193,16 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     # success_url = reverse_lazy('posts')
     # DeleteView requires a default template 
     # template_name = modelname_confirm_delete.html 
-    def get_success_url(self):
-        return reverse_lazy('post-detail', kwargs={'pk': self.object.id})
+    
+    def get_object(self):
+        # Use `comment_id` from the URL to get the object
+        return get_object_or_404(Comment, id=self.kwargs['comment_id'])
 
     
+    
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.post.id})
+  
     
     def test_func(self):
         comment =  self.get_object()
@@ -190,8 +210,9 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def handle_no_permission(self):
     # Redirect to a custom "access denied" page
-        return redirect('comments')
- 
+        comment = get_object_or_404(Comment, id=self.kwargs['comment_id'])
+        return redirect('post-detail', pk=comment.post.id)
+    
 class ListCommentsView(ListView):
     model = Comment
     context_object_name = 'comments'
