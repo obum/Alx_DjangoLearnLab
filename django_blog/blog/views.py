@@ -247,7 +247,7 @@ class SearchView(ListView):
         context['query'] = self.request.GET.get('q', '')  # Pass the search query to the template
         return context
     
-class PostsByTagView(ListView):
+class PostByTagListView(ListView):
     model = Post
     template_name = 'posts_by_tag.html'
     context_object_name = 'posts'
@@ -255,7 +255,7 @@ class PostsByTagView(ListView):
 
     def get_queryset(self):
         # Get the tag slug from the URL
-        tag_slug = self.kwargs['tag_name']
+        tag_slug = self.kwargs['tag_slug']
         # Fetch the tag object or return 404 if it doesn't exist
         tag = get_object_or_404(Tag, slug=tag_slug)  # Query by slug
         # Filter posts by the tag using the TagPost intermediary model
@@ -264,5 +264,7 @@ class PostsByTagView(ListView):
     def get_context_data(self, **kwargs):
         # Add additional context for the template
         context = super().get_context_data(**kwargs)
-        context['tag'] = get_object_or_404(Tag, slug=self.kwargs['tag_name'])
+        context['tag'] = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
         return context
+    
+    

@@ -6,7 +6,7 @@ from .views import DetailPostView, EditPostView, DeletePostView
 
 from .views import CommentCreateView, CommentUpdateView, CommentDeleteView
 
-from .views import SearchView, PostsByTagView
+from .views import SearchView, PostByTagListView
 
 urlpatterns = [
     path('login/', LoginView.as_view(template_name='blog/login.html'), name='login'),
@@ -26,6 +26,6 @@ urlpatterns = [
     path('post/<int:post_id>/comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),  
     # path('comment/<int:pk>/', DetailCommentView.as_view(), name='comment-detail'),
     path('search/', SearchView.as_view(), name='search_posts'),
-    path('tags/<slug:tag_name>', PostsByTagView.as_view(), name='posts_by_tag')
+    path('tags/<slug:tag_slug>', PostByTagListView.as_view(), name='posts_by_tag')
 
 ]
