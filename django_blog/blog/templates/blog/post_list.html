@@ -19,10 +19,15 @@
             <td> {{ post.author.username}} </td> 
             
             {% endif %}
+            
         </tr>
         {% empty %}
         <h3>No items in list</h3>
         {% endfor %}
+        <form method="get" action="{% url 'search_posts' %}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search posts..." />
+            <button type="submit">Search</button>
+        </form>
    
 
 

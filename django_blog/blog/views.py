@@ -6,10 +6,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import Comment, Post, Profile
+from .models import Comment, Post, Profile, Tag
 from .forms import UserForm, ProfileForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
+
 # Create your views here.
 
 
@@ -44,7 +46,7 @@ class ListPostsView(ListView):
 class CreatePostView(LoginRequiredMixin, CreateView):
     model = Post
     context_object_name = 'post'
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']
     template_name = 'blog/post_create.html'
     # form_class = form  
     success_url = reverse_lazy('posts')
@@ -62,6 +64,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'blog/profile_detail.html'
     context_object_name = 'profile' # name used to reference the class/object in the templates
+    
     
     def get_object(self):
         """Return the profile of the currently logged-in user."""
@@ -84,7 +87,7 @@ def ProfileUpdateView(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save() # Save the changes to the user model
             profile_form.save() # Save the changes to the profile model
-            return redirect('profile-view')  # Redirect to profile detail page
+            return redirect('profile')  # Redirect to profile detail page
     else:
         # Initialize the forms with existing data, if the user request is not a POST request
         user_form = UserForm(instance=user)
@@ -102,6 +105,7 @@ class DetailPostView(DetailView):
     context_object_name = 'post'
     template_name = 'blog/post_detail.html'
     
+    # Add comments to the Post context_object_data for the view
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post = self.get_object()  # Get the post object
@@ -158,7 +162,6 @@ class CommentCreateView(CreateView):
         comment.save()
         # return super(CreateCommentView, self).form_valid(form)
         return redirect('post-detail', pk=post.id)
-
     
 class CommentUpdateView(UserPassesTestMixin, UpdateView):
     model = Comment
@@ -217,3 +220,47 @@ class ListCommentsView(ListView):
     model = Comment
     context_object_name = 'comments'
     template_name = 'blog/post_detail.html'   
+    
+    
+class SearchView(ListView):
+    model = Post
+    template_name = 'post_search.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')  # Get the search query from URL
+        queryset = Post.objects.all()  # Start with all posts
+
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |  # Search in the title
+                Q(content__icontains=query) |  # Search in the content
+                Q(tags__name__icontains=query)  # Search in the tags
+            ).distinct()  # Ensure unique results
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')  # Pass the search query to the template
+        return context
+    
+class PostsByTagView(ListView):
+    model = Post
+    template_name = 'posts_by_tag.html'
+    context_object_name = 'posts'
+    paginate_by = 10  # Optional: Add pagination
+
+    def get_queryset(self):
+        # Get the tag slug from the URL
+        tag_slug = self.kwargs['tag_name']
+        # Fetch the tag object or return 404 if it doesn't exist
+        tag = get_object_or_404(Tag, slug=tag_slug)  # Query by slug
+        # Filter posts by the tag using the TagPost intermediary model
+        return Post.objects.filter(tags__name=tag.name)
+
+    def get_context_data(self, **kwargs):
+        # Add additional context for the template
+        context = super().get_context_data(**kwargs)
+        context['tag'] = get_object_or_404(Tag, slug=self.kwargs['tag_name'])
+        return context

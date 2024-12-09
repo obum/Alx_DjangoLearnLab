@@ -24,7 +24,11 @@
 <p>
     {{post.content}}
 </p>
-
+<p>Tags: 
+    {% for tag in post.tags.all %}
+    <!-- Tags should be linked to the a lis of posts by tag-->
+        <a href="{% url 'posts_by_tag' tag_name=tag.name %}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
 <br><br>
 
 <h2>Comments:</h2>
