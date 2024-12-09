@@ -7,10 +7,11 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib import messages
 from .models import Comment, Post, Profile, Tag
-from .forms import UserForm, ProfileForm
+from .forms import UserForm, ProfileForm, CustomPostCreationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+
 
 # Create your views here.
 
@@ -46,7 +47,8 @@ class ListPostsView(ListView):
 class CreatePostView(LoginRequiredMixin, CreateView):
     model = Post
     context_object_name = 'post'
-    fields = ['title', 'content', 'tags']
+    form_class = CustomPostCreationForm
+    # fields = ['title', 'content', 'tags']
     template_name = 'blog/post_create.html'
     # form_class = form  
     success_url = reverse_lazy('posts')
@@ -116,7 +118,7 @@ class EditPostView(LoginRequiredMixin, UpdateView):
     model = Post
     context_object_name = 'post'
     template_name = 'blog/post_update.html'
-    fields = [ 'title', 'content']
+    fields = [ 'title', 'content', 'tags']
     
     # success_url = reverse_lazy('post-detail', args=['post.id'])
         

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from .models import Comment, Post, Profile
 from django import forms
-
+from taggit.forms import TagWidget
 User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
@@ -28,8 +28,14 @@ class CustomPostCreationForm(forms.ModelForm):
     
     class Meta:
         model = Post
-        fields = ['title', 'content']
-
+        fields = ['title', 'content', 'tags']
+        
+        widgets = {
+            'tags': TagWidget(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Add tags here'
+            }),
+        }
     # Automatically set the author to the current user when saving the form
     def save(self, commit=True):
         
