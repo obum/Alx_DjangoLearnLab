@@ -6,12 +6,12 @@ from rest_framework.authtoken import views
 router = DefaultRouter()
 
 # Router to handle Get profile and obtain profile requests
-router.register('profile', ProfileViewSet, basename='profile')
+router.register('profile/', ProfileViewSet, basename='profile')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('login', LoginView.as_view(), name='login'),
-    path('register', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('register/', RegisterView.as_view(), name='register'),
 ]
 
 # A mechanism for clients to obtain a token given the username and password.
