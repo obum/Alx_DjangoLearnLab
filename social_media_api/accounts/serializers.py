@@ -1,4 +1,5 @@
 # accounts/serializers.py
+from tkinter import S
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
@@ -31,6 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
+    email = serializers.ChoiceField()
     password = serializers.CharField(max_length=128, write_only=True)
 
     def create(self, validated_data):
