@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
-    email = serializers.ChoiceField()
+    email = serializers.CharField()
     password = serializers.CharField(max_length=128, write_only=True)
 
     def create(self, validated_data):
