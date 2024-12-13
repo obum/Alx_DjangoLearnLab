@@ -2,6 +2,7 @@ from rest_framework.response import Response # For customized responses
 from .serializers import PostSerializer, CommentSerializer
 from .models import Post, Comment
 from rest_framework import permissions
+from rest_framework import viewsets
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -14,7 +15,7 @@ from .permissions import IsAuthorOrReadOnly
 
 
 # Create your views here.
-class PostViewSet(ModelViewSet):
+class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
