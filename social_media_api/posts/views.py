@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 # from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 # from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import filters, permissions
 from django_filters import rest_framework
 from .permissions import IsAuthorOrReadOnly
 from rest_framework.generics import ListAPIView
@@ -45,7 +45,7 @@ class CommentViewSet(ModelViewSet):
         
 class FeedView(ListAPIView):
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     # queryset = Post.objects.all()
     
     def get_queryset(self):
@@ -56,9 +56,10 @@ class FeedView(ListAPIView):
         print(logged_in_user)
         
         # Get the users the logged in user is following
-        users_am_following = logged_in_user.following.all()
-        print(users_am_following)
+        following_users = logged_in_user.following.all()
+        print(following_users)
         # Fetch posts from those users, ordered by creation date (most recent first)
-        posts_by_following = Post.objects.filter(author__in=users_am_following).order_by('-created_at')
+        posts_by_following = Post.objects.filter(author__in=following_users).order_by('-created_at')
+    
         print(posts_by_following)
         return posts_by_following
