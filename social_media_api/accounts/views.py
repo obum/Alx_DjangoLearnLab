@@ -98,6 +98,7 @@ class FollowUserView(generics.GenericAPIView):
     def post(self, request, user_id, *args, **kwargs):
         # Get the user to follow from the database using the user_id (unique identifier)
         user_to_follow = get_object_or_404(User, pk=user_id)
+        # CustomUser.objects.all()
         logged_in_user = request.user
 
         # Check if the logged-in user is trying to follow themselves
