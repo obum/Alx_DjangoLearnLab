@@ -9,7 +9,7 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'created_at']
 
-    def validate_title_duplicate(self, value):
+    def validate_title(self, value):
         if Post.objects.filter(title=value).exists():
             raise serializers.ValidationError('Post with this title already exists')
         return value

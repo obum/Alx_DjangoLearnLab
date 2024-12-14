@@ -2,13 +2,13 @@ from rest_framework import permissions
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
-    Args: self, request, view, obj
-        permissions (IsAuthorOrReadOnly): Allow only authors to modify posts while unauthenticated users can view
+    Custom permission to allow only authors to modify posts.
+    Anyone can view posts. Only authenticated users can create new posts.
     """
+
     def has_object_permission(self, request, view, obj):
-        print()
-        if request.method == permissions.SAFE_METHODS:
-            # SAFE METHODS are GET HEAD OPTIONS
+        # Allow safe methods (GET, HEAD, OPTIONS) for any user
+        if request.method in permissions.SAFE_METHODS:
             return True
-        # SAFE METHODS are PUT / PATCH / POST / DELETE
+        # Allow modification only if the user is the author
         return obj.author == request.user
