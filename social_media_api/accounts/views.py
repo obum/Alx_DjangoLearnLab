@@ -2,7 +2,7 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import AllowAny
+
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer, UserSerializer
@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
+from rest_framework import generics, permissions
 
 User = get_user_model()
 # Create your views here.
@@ -27,7 +28,7 @@ class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = []
 
     def post(self, request):
         username = request.data.get("username")
@@ -91,51 +92,50 @@ class LogoutAPIView(APIView):
 
 # ----------- follow / unfollow action to modify the following relationship ----------- #
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def follow_user(request, user_id): # action takes the url and the username
-    
-    # get the user to follow from the database using the username field which is unique
-    user_to_follow = get_object_or_404(User, pk=user_id) #returns a user object
-    
-    logged_in_user = request.user
-    
-    # Check if the logged in user is wants to follow himself
-    if logged_in_user == user_to_follow:
-        return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Check if logged_in_user is already following.
-    is_following = logged_in_user.following.filter(id=user_to_follow.id).exists() 
-    
-    if is_following:
-        return Response({"error": f"You are already following {user_to_follow}."}, status=status.HTTP_400_BAD_REQUEST) 
-    
-    logged_in_user.following.add(user_to_follow)
-    return Response({'message': f'You are now following {user_to_follow.username}.'}, status=status.HTTP_200_OK)
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request, user_id, *args, **kwargs):
+        # Get the user to follow from the database using the user_id (unique identifier)
+        user_to_follow = get_object_or_404(User, pk=user_id)
+        logged_in_user = request.user
 
+        # Check if the logged-in user is trying to follow themselves
+        if logged_in_user == user_to_follow:
+            return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def unfollow_user(request, user_id):
-    
-    # Get the user object to unfollow from the database but parsed from the endpoint
-    user_to_unfollow = get_object_or_404(User, pk=user_id)
-    
-    logged_in_user = request.user # user who wants to unfollow
-    
-    # check if the user wants to unfollow himself
-    
-    if logged_in_user == user_to_unfollow:
-        return Response({"error": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # check if the user wants to unfollow someone who is not being followed
-    is_followed = logged_in_user.following.filter(id=user_to_unfollow.id).exists()
-    
-    if not is_followed:
-        return Response({"error": f"{user_to_unfollow} is already unfollowed."}, status=status.HTTP_400_BAD_REQUEST)
+        # Check if the logged-in user is already following the user
+        is_following = logged_in_user.following.filter(id=user_to_follow.id).exists()
+
+        if is_following:
+            return Response({"error": f"You are already following {user_to_follow.username}."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Add the user to the logged-in user's following list
+        logged_in_user.following.add(user_to_follow)
+
+        return Response({'message': f'You are now following {user_to_follow.username}.'}, status=status.HTTP_200_OK)
+
+class UnFollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, user_id, *args, **kwargs):
         
-    logged_in_user.following.remove(user_to_unfollow)
-    return Response({'message': f'You are no longer following {user_to_unfollow.username}.'}, status=status.HTTP_200_OK)
+        # Get the user object to unfollow from the database but parsed from the endpoint
+        user_to_unfollow = get_object_or_404(User, pk=user_id)
+        
+        logged_in_user = request.user # user who wants to unfollow
+        
+        # check if the user wants to unfollow himself
+        
+        if logged_in_user == user_to_unfollow:
+            return Response({"error": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # check if the user wants to unfollow someone who is not being followed
+        is_followed = logged_in_user.following.filter(id=user_to_unfollow.id).exists()
+        
+        if not is_followed:
+            return Response({"error": f"{user_to_unfollow} is already unfollowed."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        logged_in_user.following.remove(user_to_unfollow)
+        return Response({'message': f'You are no longer following {user_to_unfollow.username}.'}, status=status.HTTP_200_OK)
 
 
