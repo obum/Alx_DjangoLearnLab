@@ -1,6 +1,6 @@
 # from django.shortcuts import render #Do not need tis import
 from django.db import IntegrityError
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -127,3 +127,9 @@ class LogoutAPIView(APIView):
             return Response({"message": "Successfully logged out."}, status=HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({"error": "Token not found."}, status=HTTP_400_BAD_REQUEST)
+
+
+class ListUserView(ListAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
