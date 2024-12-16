@@ -35,17 +35,17 @@ SECRET_KEY = 'django-insecure-gxjemh&7-(3m=lwrw=^#fu7@qjp$xd76()logi^-gxuxx5o+-t
 DEBUG = True
 
 # Security Settings
-# SECURE_BROWSER_XSS_FILTER = True
-# X_FRAME_OPTIONS = 'DENY'
-# SECURE_CONTENT_TYPE_NOSNIFF = True
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
-# # Redirect all HTTP requests to HTTPS
-# SECURE_SSL_REDIRECT = True
-# SECURE_HSTS_PRELOAD = True
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_SECONDS = 31536000
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_SECONDS = 31536000
 
 
 # This configuration is important when running applications behind proxies,
@@ -53,9 +53,10 @@ DEBUG = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
 # Content Security Policy settings
+
 # CSP_DEFAULT_SRC = ("'self'",)  # Allow content only from the same origin by default
 # CSP_SCRIPT_SRC = ("'self'", "https://trustedscripts.example.com")  # Allow scripts from these sources
 # CSP_STYLE_SRC = ("'self'", "https://trustedstyles.example.com")    # Allow styles from these sources
