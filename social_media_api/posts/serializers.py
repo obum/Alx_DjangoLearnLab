@@ -20,14 +20,14 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     # Ensure that only post the exists can be commented on or referenced.
-    posts = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
 
     class Meta:
         model = Comment
         fields = '__all__'
         
 class LikeSerializer(serializers.ModelSerializer):
-    posts = serializers.PrimaryKeyRelatedField(queryset=Like.objects.all())
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
     
     class Meta:
         model = Like
