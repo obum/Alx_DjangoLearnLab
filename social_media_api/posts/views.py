@@ -74,10 +74,10 @@ class FeedView(ListAPIView):
 class LikePostView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     
-    def post(self, request, post_id, *args, **kwargs):
+    def post(self, request, pk, *args, **kwargs):
         ...
         # get the post to like from the database while getting the id from the endpoint.
-        post_to_like = generics.get_object_or_404(Post, pk=post_id)
+        post_to_like = generics.get_object_or_404(Post, pk=pk)
         
         # get the logged in user
         logged_in_user = request.user
@@ -123,10 +123,10 @@ class LikePostView(generics.GenericAPIView):
 class UnLikePostView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     
-    def delete(self, request, post_id, *args, **kwargs):
+    def delete(self, request, pk, *args, **kwargs):
         # get the post to unlike from the unlike endpoint.
         # generics.get_object_or_404(Post, pk=pk)
-        post_to_unlike = generics.get_object_or_404(Post, pk=post_id)
+        post_to_unlike = generics.get_object_or_404(Post, pk=pk)
         
         # get the logged_in_user.
         logged_in_user = request.user
