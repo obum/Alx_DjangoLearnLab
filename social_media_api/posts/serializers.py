@@ -1,13 +1,17 @@
 from rest_framework import serializers
-from .models import Comment, Post
+from .models import Comment, Like, Post
 
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
+    likes_count = serializers.SerializerMethodField() # Added to know the number of likes for a post
 
     class Meta:
         model = Post
         fields = '__all__'
         read_only_fields = ['id', 'created_at']
+        
+    def get_likes_count(self, obj):
+        return obj.likes.count() # counts the likes in a given post using the reverse relationship / related name
 
     def validate_title(self, value):
         if Post.objects.filter(title=value).exists():
@@ -21,5 +25,13 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
+        
+class LikeSerializer(serializers.ModelSerializer):
+    posts = serializers.PrimaryKeyRelatedField(queryset=Like.objects.all())
+    
+    class Meta:
+        model = Like
+        fields = '__all__'
+        read_only_fields = ['user', 'created_at']
 
 
