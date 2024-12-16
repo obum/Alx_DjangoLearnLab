@@ -26,7 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 class RegisterSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    # serializers.CharField()
+    username = serializers.CharField(max_length=255)
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128, write_only=True)
 
