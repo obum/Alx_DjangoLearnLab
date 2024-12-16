@@ -125,6 +125,7 @@ class UnLikePostView(generics.GenericAPIView):
     
     def delete(self, request, post_id, *args, **kwargs):
         # get the post to unlike from the unlike endpoint.
+        # generics.get_object_or_404(Post, pk=pk)
         post_to_unlike = generics.get_object_or_404(Post, pk=post_id)
         
         # get the logged_in_user.
@@ -146,6 +147,7 @@ class UnLikePostView(generics.GenericAPIView):
         # Check if post has been liked by user.
         
         try:
+            # Like.objects.get_or_create(user=request.user, post=post)
             liked = Like.objects.get(post=post_to_unlike, liked_by=logged_in_user)
 
             # like_id_to_unlike = liked.id
