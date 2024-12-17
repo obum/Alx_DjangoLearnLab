@@ -85,7 +85,7 @@ Develop an API to manage inventory for a store where authenticated users can add
 
 ## POSTMAN ScreenShot
 
- ![alt text](image.png)
+![alt text](image.png)
 
   ---
 
