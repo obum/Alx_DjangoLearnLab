@@ -18,32 +18,6 @@ User = get_user_model()
 # Create your views here.
 
 
-# class RegisterView(CreateAPIView):
-#     serializer_class = RegisterSerializer
-#     permission_classes = [AllowAny]
-
-#     def create(self, request, *args, **kwargs):
-#         # Validate and save the user using the serializer
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception = True)
-#         user = serializer.save()
-
-#         # Ensure user is valid and token is created
-#         if user is None:
-#             return Response({"error": "User could not be created"}, status=HTTP_400_BAD_REQUEST)
-        
-#         # Generate or retrieve the token for the user
-#         token, created = Token.objects.get_or_create(user=user)
-
-#         # Prepare the response data
-#         response_data = {
-#             "token": token.key,
-#             "user": UserSerializer(user).data
-#         }
-        
-#         # Return the response
-#         return Response(response_data, status=HTTP_201_CREATED)
-
 class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
 
@@ -72,7 +46,6 @@ class RegisterView(CreateAPIView):
     #             "error": "A database error occurred."
     #         }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -89,8 +62,6 @@ class LoginView(APIView):
             return Response({"token": token.key}, status=HTTP_200_OK)
         return Response({"error": "Invalid username or password"}, status=HTTP_400_BAD_REQUEST)
    
-
-
 class ProfileViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -127,7 +98,6 @@ class LogoutAPIView(APIView):
             return Response({"message": "Successfully logged out."}, status=HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({"error": "Token not found."}, status=HTTP_400_BAD_REQUEST)
-
 
 class ListUserView(ListAPIView):
     serializer_class = UserSerializer
