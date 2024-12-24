@@ -70,7 +70,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user_data = super().to_representation(instance)
         user_tokens = self.get_tokens_for_user(instance)
         return {
-            'user_info': user_data,
+            'user_info': {
+                'id': user_data['id'],
+                'username': user_data['username'],
+                'email': user_data['email'],
+                'role': user_data['role'],
+                'creation date': user_data['created_at'],
+                'last update': user_data['updated_at'],                
+                },
             'refresh_token': user_tokens['refresh'],
             'access_token': user_tokens['access']
         }
@@ -97,3 +104,20 @@ class UserSerializer(serializers.ModelSerializer):
             
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        """
+        Format the response using the UserSerializer and include the token.
+        """
+        user_data = super().to_representation(instance)
+
+        return {
+            'user_info': {
+                'id': user_data['id'],
+                'username': user_data['username'],
+                'email': user_data['email'],
+                'role': user_data['role'],
+                'creation date': user_data['created_at'],
+                'last update': user_data['updated_at'],                
+                }
+            }
