@@ -7,8 +7,8 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'followers']
-        read_only_fields = ['followers']
+        fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'following']
+        read_only_fields = ['following']
 
     def update(self, instance, validated_data):
         # Update the fields based on validated_data
@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 class RegisterSerializer(serializers.Serializer):
+    # serializers.CharField()
     username = serializers.CharField(max_length=255)
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128, write_only=True)

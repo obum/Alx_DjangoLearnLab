@@ -1,5 +1,5 @@
 """
-URL configuration for social_media_api project.
+URL configuration for ims_api project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -19,8 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include('api.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('', include('posts.urls')),
-    path('', include('notifications.urls'))
+    path('api/users/', include('users.urls'))
 ]

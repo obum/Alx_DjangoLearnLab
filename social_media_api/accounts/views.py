@@ -2,6 +2,7 @@
 from django.db import IntegrityError
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer, UserSerializer
@@ -14,6 +15,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from rest_framework import generics, permissions
+
 User = get_user_model()
 # Create your views here.
 
@@ -21,44 +27,19 @@ User = get_user_model()
 class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
 
-    # def create(self, request, *args, **kwargs):
-    #     try:
-    #         # Use the serializer to validate and save the data
-    #         serializer = self.get_serializer(data=request.data)
-    #         serializer.is_valid(raise_exception=True)
-    #         user = serializer.save()  # The logic for creating the user and token is in the serializer
-
-    #         # Return a custom response
-    #         return Response({
-    #             "user_info": UserSerializer(user).data,
-    #             "token": user.auth_token.key  # The token is created and attached to the user in the serializer
-    #         }, status=HTTP_201_CREATED)
-        
-    #     except IntegrityError as e:
-    #         # Handle unique constraint violation (e.g., username already exists)
-    #         if "UNIQUE constraint failed" in str(e):
-    #             return Response({
-    #                 "error": "A user with this username already exists."
-    #             }, status=HTTP_400_BAD_REQUEST)
-            
-    #         # Catch other IntegrityErrors if needed
-    #         return Response({
-    #             "error": "A database error occurred."
-    #         }, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
 class LoginView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = []
 
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
         user = authenticate(username=username, password=password)
-        token = Token.objects.get(user=user)
-        if user and token:
-            # # Delete any existing tokens for the user
-            # Token.objects.filter(user=user).delete()
-            # # Generate a new token
-            # token = Token.objects.create(user=user)
+        if user :
+            # token = Token.objects.get(user=user)
+            # Delete any existing tokens for the user
+            Token.objects.filter(user=user).delete()
+            # Generate a new token
+            token = Token.objects.create(user=user)
             return Response({"token": token.key}, status=HTTP_200_OK)
         return Response({"error": "Invalid username or password"}, status=HTTP_400_BAD_REQUEST)
    
@@ -70,24 +51,7 @@ class ProfileViewSet(ModelViewSet):
     def get_queryset(self):
         # Restrict to the logged-in user's profile
         return self.queryset.filter(id=self.request.user.id)
-
-    # def update(self, request, *args, **kwargs):
-    #     # Allow the user to update their profile
-    #     partial = kwargs.pop('partial', False)
-    #     instance = self.get_object()
-    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_update(serializer)
-    #     return Response(serializer.data)
     
-    # def update(self, request, *args, **kwargs):
-    #     partial = kwargs.pop('partial', False)
-    #     instance = self.get_object()
-    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_update(serializer)
-    #     return Response(serializer.data)
-
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -103,3 +67,54 @@ class ListUserView(ListAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
+
+
+# ----------- follow / unfollow action to modify the following relationship ----------- #
+
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id, *args, **kwargs):
+        # Get the user to follow from the database using the user_id (unique identifier)
+        user_to_follow = get_object_or_404(User, pk=user_id)
+        # CustomUser.objects.all()
+        logged_in_user = request.user
+
+        # Check if the logged-in user is trying to follow themselves
+        if logged_in_user == user_to_follow:
+            return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the logged-in user is already following the user
+        is_following = logged_in_user.following.filter(id=user_to_follow.id).exists()
+
+        if is_following:
+            return Response({"error": f"You are already following {user_to_follow.username}."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Add the user to the logged-in user's following list
+        logged_in_user.following.add(user_to_follow)
+
+        return Response({'message': f'You are now following {user_to_follow.username}.'}, status=status.HTTP_200_OK)
+
+class UnFollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, user_id, *args, **kwargs):
+        
+        # Get the user object to unfollow from the database but parsed from the endpoint
+        user_to_unfollow = get_object_or_404(User, pk=user_id)
+        
+        logged_in_user = request.user # user who wants to unfollow
+        
+        # check if the user wants to unfollow himself
+        
+        if logged_in_user == user_to_unfollow:
+            return Response({"error": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # check if the user wants to unfollow someone who is not being followed
+        is_followed = logged_in_user.following.filter(id=user_to_unfollow.id).exists()
+        
+        if not is_followed:
+            return Response({"error": f"{user_to_unfollow} is already unfollowed."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        logged_in_user.following.remove(user_to_unfollow)
+        return Response({'message': f'You are no longer following {user_to_unfollow.username}.'}, status=status.HTTP_200_OK)
+
