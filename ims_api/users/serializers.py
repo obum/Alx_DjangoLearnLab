@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # Use a dedicated Serializer for user creation
 User = get_user_model()
+required_fields = ['username', 'email', 'role','password']
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -15,6 +16,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields =  '__all__'
         read_only_fields = ['created_at', 'updated_at']
+
+    def validate(self, attrs):
+        missing_field = [field for field in required_fields if field not in attrs]
+        if missing_field:
+            raise ValidationError(f'{missing_field[0]} was not provided')
+        return attrs
         
     # Validate the email field to ensure uniqueness  
     def validate_email(self, value):  

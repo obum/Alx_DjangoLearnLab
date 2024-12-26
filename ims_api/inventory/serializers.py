@@ -12,4 +12,4 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         model = InventoryItem
         fields = "__all__"
         read_only_fields = ['id', 'created_at']
-        depth = 1
+        # depth = 1
