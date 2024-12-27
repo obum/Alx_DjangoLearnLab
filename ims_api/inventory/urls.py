@@ -7,7 +7,7 @@ router.register(r'category', CategoryView, basename='category')
 router.register(r'', InventoryItemViewset, basename='inventory')
 
 urlpatterns = [
-    path('list/', InventoryLevelView.as_view(), name='inventory-level'),
+    path('level/', InventoryLevelView.as_view(), name='inventory-level'),
 
     path('', include(router.urls)),
 ]
