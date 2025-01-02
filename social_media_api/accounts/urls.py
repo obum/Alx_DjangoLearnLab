@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import LoginView, LogoutAPIView, RegisterView, ProfileViewSet, LogoutAPIView, FollowUserView, UnFollowUserView
+from .views import LoginView, LogoutAPIView, RegisterView, ProfileViewSet, LogoutAPIView, ListUserView, FollowUserView, UnFollowUserView
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views  
 
@@ -12,7 +12,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('login/', LoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
-    path('lgout/', LogoutAPIView.as_view(), name='logout'),
+    path('logout/', LogoutAPIView.as_view(), name='logout'),
+    path('users/', ListUserView.as_view(), name='users'),
     path('follow/<int:user_id>/', FollowUserView.as_view(), name='follow'),
     path('unfollow/<int:user_id>/', UnFollowUserView.as_view(),  name='unfollow')
 ]
@@ -20,6 +21,6 @@ urlpatterns = [
 # A mechanism for clients to obtain a token given the username and password.
 # REST framework provides a built-in view to provide this behavior. 
 urlpatterns += [
-    path('token', views.obtain_auth_token)
+    path('token/', views.obtain_auth_token)
 ]
 # /follow/<int:user_id>/ and /unfollow/<int:user_id>/).
