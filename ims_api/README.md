@@ -53,7 +53,7 @@ Develop an API to manage inventory for a store where authenticated users can add
         INSTALLED_APPS = [
             'rest_framework',
             'rest_framework_simplejwt',
-            'USers.apps.UsersConfig',
+            'Users.apps.UsersConfig',
             ]
         REST_FRAMWORK = {
             'DEFAULT_AUTHENTICATION_CLASSES':(
