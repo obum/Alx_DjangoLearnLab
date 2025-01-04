@@ -1,10 +1,15 @@
 from rest_framework import serializers
+
 from .models import InventoryItem, Category
+
+from .models import Category, InventoryItem
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+
         
 
 class InventoryItemSerializer(serializers.ModelSerializer): 
@@ -51,4 +56,4 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         inventory_item = InventoryItem.objects.create(**validated_data)
         return inventory_item
     
-    
+
