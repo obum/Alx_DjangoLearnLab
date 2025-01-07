@@ -1,56 +1,49 @@
-# from django.shortcuts import render
-# from rest_framework import generics, permissions
-# from rest_framework.viewsets import ModelViewSet
-# from .models import Category, InventoryItem
-# from .serializers import InventoryItemSerializer, CategorySerializer
-
-# Create your views here.
-
-# class InventoryItemView(ModelViewSet):
-#     serializer_class = InventoryItemSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
-#     def get_queryset(self):
-#         # Ensure that logged_in_users can only access their own inventory items
-#         queryset = InventoryItem.objects.filter(owner=self.request.user)
-#         return queryset
-    
-#     def perform_create(self, serializer):
-#         # Automatically assigns the logged_in_user as the owner of the inventory item upon creation
-#         serializer.save(owner=self.request.user)
-        
-# class CategoryView(ModelViewSet):
-#     serializer_class = CategorySerializer
-#     permission_classes = [permissions.IsAuthenticated]
-#     queryset = Category.objects.all()
-    
+from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ModelViewSet
-from .serializers import CategorySerializer, InventoryItemSerializer
-from .models import Category, InventoryItem
+from .serializers import CategorySerializer, InventoryChangeSerializer, InventoryItemSerializer
+from .models import Category, InventoryChange, InventoryItem
 from rest_framework import permissions, generics, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .permissions import IsOwnerorReadonly
+from django_filters import rest_framework as filters
 # Create your views here.
 
 User = get_user_model()
+
+class ItemFilter(filters.FilterSet):
+    min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
+    max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
+
+    class Meta:
+        model = InventoryItem
+        fields = ['category', 'max_price', 'min_price', 'low_stock']
 
 class CategoryView(ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
-
 class InventoryItemViewset(ModelViewSet):
+    # Only authenticated users should be able to manage inventory (i.e., create, update, or delete items)
+    permission_classes = [IsOwnerorReadonly]
     serializer_class = InventoryItemSerializer
     queryset = InventoryItem.objects.all()
-    # Only authenticated users should be able to manage inventory (i.e., create, update, or delete items)
-    permission_classes = [permissions.IsAuthenticated, IsOwnerorReadonly]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ItemFilter
+
+    # def get_queryset(self):
+    #     # Ensure that logged_in_users can only access their own inventory items
+    #     queryset = InventoryItem.objects.filter(owner=self.request.user)
+    #     return queryset   
 
 class InventoryLevelView(generics.ListAPIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerorReadonly]
     serializer_class = InventoryItemSerializer
     queryset = InventoryItem.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ItemFilter
     
     def list(self, request):
         queryset = self.get_queryset()
@@ -65,10 +58,38 @@ class InventoryLevelView(generics.ListAPIView):
             }
             for item in items
         ]
-        
-        print(inventory_level)
+              
         return Response(
                 inventory_level,
                 status=status.HTTP_200_OK
             )
 
+class InventoryChangeViewSet(ModelViewSet):
+    """A viewset to handle inventory changes."""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = InventoryChangeSerializer
+    queryset = InventoryChange.objects.all()
+
+    # Upon creation set the logged_in user as the changed_by value
+    def perform_create(self, serializer):
+        serializer.save(changed_by=self.request.user)
+
+    # Define a custom action to display all changes on an item
+    @action(methods=['get'], detail=True, url_path='history', url_name='inventory_change_history')
+    def history(self, request, pk=None):
+        """Action to view the inventory change history of a specific item."""
+        item_id = pk
+        changes = InventoryChange.objects.filter(inventory_item__id=item_id).order_by('created_at')
+        inventory_item = changes.first().inventory_item # get the first change and get the item associated with it
+        inventory_item_name = inventory_item.name
+        serializer = self.get_serializer(changes, many=True)
+        data = serializer.data
+
+        return Response(
+            {
+                'inventory_item_name': inventory_item_name,
+                'change history': data
+            },
+            status=status.HTTP_200_OK
+        )
+ 

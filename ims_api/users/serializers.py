@@ -14,8 +14,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields =  '__all__'
-        read_only_fields = ['created_at', 'updated_at']
+        fields =  ['id', 'username', 'email', 'role','password', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate(self, attrs):
         missing_field = [field for field in required_fields if field not in attrs]

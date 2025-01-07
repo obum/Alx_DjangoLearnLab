@@ -1,16 +1,11 @@
 from rest_framework import serializers
-
-from .models import InventoryItem, Category
-
+from .models import InventoryChange, InventoryItem, Category
 from .models import Category, InventoryItem
-
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
-
-        
 
 class InventoryItemSerializer(serializers.ModelSerializer): 
     # Ensure that only existing categories are used during item creation or serialization.    
@@ -18,8 +13,8 @@ class InventoryItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventoryItem
         fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']
-        depth = 1
+        read_only_fields = ['created_at', 'updated_at', 'low_stock']
+        # depth = 1
         
     # Ensure validation for required fields like Name, Quantity, and Price.
     def validate_name(self, value):
@@ -47,13 +42,17 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
             
-        # # Ensure the 'owner' field is set to the current user
-        # request = self.context.get('request')
-        # if not request or not hasattr(request, 'user'):
-        #     raise serializers.ValidationError("Request user is not available.")
+        # Ensure the 'owner' field is set to the current user
+        request = self.context.get('request')
+        if not request or not hasattr(request, 'user'):
+            raise serializers.ValidationError(f"{request.user} is not available.")
                 
-        # validated_data['owner'] = request.user
+        validated_data['owner'] = request.user
         inventory_item = InventoryItem.objects.create(**validated_data)
         return inventory_item
     
-
+class InventoryChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InventoryChange
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at', 'changed_by']
