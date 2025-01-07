@@ -2,19 +2,19 @@ from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 from .serializers import CategorySerializer, InventoryChangeSerializer, InventoryItemSerializer
 from .models import Category, InventoryChange, InventoryItem
-from rest_framework import permissions, generics, status
+from rest_framework import permissions, generics, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .permissions import IsOwnerorReadonly
-from django_filters import rest_framework as filters
+from django_filters import rest_framework as filter
 # Create your views here.
 
 User = get_user_model()
 
-class ItemFilter(filters.FilterSet):
-    min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
-    max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
+class ItemFilter(filter.FilterSet):
+    min_price = filter.NumberFilter(field_name="price", lookup_expr='gte')
+    max_price = filter.NumberFilter(field_name="price", lookup_expr='lte')
 
     class Meta:
         model = InventoryItem
@@ -30,8 +30,9 @@ class InventoryItemViewset(ModelViewSet):
     permission_classes = [IsOwnerorReadonly]
     serializer_class = InventoryItemSerializer
     queryset = InventoryItem.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filter.DjangoFilterBackend, filters.OrderingFilter) # Add sorting functionality
     filterset_class = ItemFilter
+    ordering_fields = ['name', 'quantity', 'price', 'created_at']
 
     # def get_queryset(self):
     #     # Ensure that logged_in_users can only access their own inventory items
@@ -42,11 +43,12 @@ class InventoryLevelView(generics.ListAPIView):
     permission_classes = [IsOwnerorReadonly]
     serializer_class = InventoryItemSerializer
     queryset = InventoryItem.objects.all()
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filter.DjangoFilterBackend, filters.OrderingFilter) # Add sorting functionality
     filterset_class = ItemFilter
+    ordering_fields = ['name', 'quantity', 'price', 'created_at']
     
     def list(self, request):
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
         serializer = InventoryItemSerializer(queryset, many=True)
         items = serializer.data
   

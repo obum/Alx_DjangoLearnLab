@@ -63,7 +63,3 @@ class UserLogoutView(DestroyAPIView):
                 {"detail": str(e)},
                 status= status.HTTP_400_BAD_REQUEST
             )
-    
-
-class RestockInventory(generics.GenericAPIView):
-    ...
